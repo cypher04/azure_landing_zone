@@ -68,3 +68,23 @@ variable "backend_key" {
     description = "Key for the backend state file"
     type        = string
 }
+
+variable "management_subscription_id" {
+    description = "Management subscription ID"
+    type        = string
+}
+
+variable "identity_subscription_id" {
+    description = "Identity subscription ID"
+    type        = string
+}
+
+variable "connectivity_resource_group_name" {
+    description = "Name of the connectivity resource group"
+    type        = string
+}
+
+variable "landing_zone_1_subscription_id" {
+    description = "Landing Zone 1 subscription ID"
+    type        = string
+}

@@ -22,3 +22,21 @@ provider "azurerm" {
     features {}
     subscription_id = var.security_subscription_id
 }
+
+provider "azurerm" {
+    alias = "Management"
+    features {}
+    subscription_id = var.management_subscription_id
+}
+
+provider "azurerm" {
+    alias = "Identity"
+    features {}
+    subscription_id = var.identity_subscription_id
+}
+
+provider "azurerm" {
+    alias = "landingzone1"
+    features {}
+    subscription_id = var.landing_zone_1_subscription_id
+}
