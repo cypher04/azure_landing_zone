@@ -17,12 +17,13 @@ resource "azurerm_policy_definition" "location_restriction_policy" {
     "if": {
         "not": {
             "field": "location",
-            "in": [parameters('allowedLocations')]
+            "in": "[parameters('allowedLocations')]"
         }
     },
     "then": {
         "effect": "deny"
   
+    }
 }
 POLICY_RULE
 
@@ -56,7 +57,7 @@ resource "azurerm_policy_definition" "vm_size_restriction_policy" {
     "if": {
         "not": {
             "field": "type",
-            "in": [parameters('allowedVMSizes')]
+            "in": "[parameters('allowedVMSizes')]"
         }
     },
     "then": {
@@ -92,7 +93,7 @@ resource "azurerm_policy_definition" "nsg_restriction_policy" {
     "if": {
         "not": {
             "field": "type",
-            "in": [parameters('allowedNSGs')]
+            "in": "[parameters('allowedNSGs')]"
         }
     },
     "then": {
@@ -116,4 +117,35 @@ PARAMETERS
 }
 
 
-// assi
+// assign the policies to Security Subscription
+resource "azurerm_subscription_policy_assignment" "location_restriction_assignment" {
+  name                 = "location-restriction-assignment"
+  subscription_id      = "/subscriptions/${var.security_subscription_id}"
+  policy_definition_id = azurerm_policy_definition.location_restriction_policy.id
+
+  parameters = <<PARAMETERS
+{
+    "allowedLocations": {
+        "value": "[var.location]"
+    }
+}
+PARAMETERS
+}
+
+// assign the VM size restriction policy to landing Subscription
+resource "azurerm_subscription_policy_assignment" "vm_size_restriction_assignment" {
+  name                 = "vm-size-restriction-assignment"
+  subscription_id      = "/subscriptions/${var.landing_zone_1_subscription_id}"
+  policy_definition_id = azurerm_policy_definition.vm_size_restriction_policy.id
+
+  parameters = <<PARAMETERS
+{
+    "allowedVMSizes": {
+        "value": "[var.vm_size]"
+    }
+}
+PARAMETERS
+}
+
+
+// assign the NSG restriction policy to landing Subscription
