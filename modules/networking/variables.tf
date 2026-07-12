@@ -42,3 +42,8 @@ variable "data_platform_spoke_vnet_name" {
     description = "Name of the data platform spoke virtual network"
     type        = string
 }
+
+variable "firewall_private_ip" {
+    description = "The private IP address of the Azure Firewall"
+    type        = string
+}

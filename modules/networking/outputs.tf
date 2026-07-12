@@ -4,6 +4,9 @@ output "subnet_ids" {
        Shared_services = azurerm_subnet.SharedServicesSubnet.id
        VPN_gateway = azurerm_subnet.GatewaySubnet.id
        Azure_firewall = azurerm_subnet.AzureFirewallSubnet.id
+       production_spoke_subnet = azurerm_subnet.production_spoke_subnet.id
+       non_production_spoke_subnet = azurerm_subnet.non_production_spoke_subnet.id
+       data_platform_spoke_subnet = azurerm_subnet.data_platform_spoke_subnet.id
 
     }
 }
