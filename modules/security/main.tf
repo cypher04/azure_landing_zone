@@ -14,6 +14,7 @@ resource "azurerm_firewall" "azure_firewall" {
     resource_group_name = azurerm_resource_group.security_rg.name
     sku_name           = "AZFW_VNet"
     sku_tier           = "Standard"
+    firewall_policy_id  = var.firewall_policy_id
 
     ip_configuration {
         name                 = "configuration"
@@ -21,4 +22,3 @@ resource "azurerm_firewall" "azure_firewall" {
         public_ip_address_id = var.azure_firewall_pip_id
     }
 }
-

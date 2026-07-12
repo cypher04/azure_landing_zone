@@ -22,3 +22,9 @@ variable "azure_firewall_pip_id" {
     description = "The ID of the public IP address for the Azure Firewall"
     type        = string
 }
+
+variable "firewall_policy_id" {
+    description = "The ID of the Azure Firewall Policy"
+    type        = string
+}
+
