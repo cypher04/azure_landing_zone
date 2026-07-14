@@ -71,5 +71,6 @@ module "policy" {
     landing_zone_1_subscription_id = var.landing_zone_1_subscription_id
     vm_size = var.vm_size
     security_resource_group_name = var.security_resource_group_name
+    azure_firewall_pip_id = module.networking.azure_firewall_pip_id
 
 }

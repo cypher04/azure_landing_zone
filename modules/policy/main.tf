@@ -178,7 +178,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "firewall_policy_rule_c
         type = "Https"
         port = 443
       }
-      source_addresses  = ["10.0.0.1"]
+      source_addresses  = ["10.2.0.0/16", "10.3.0.0/16", "10.4.0.0/16"]
       destination_fqdns = ["*.microsoft.com"]
     }
   }
@@ -190,23 +190,37 @@ resource "azurerm_firewall_policy_rule_collection_group" "firewall_policy_rule_c
     rule {
       name                  = "network_rule_collection1_rule1"
       protocols             = ["TCP", "UDP"]
-      source_addresses      = ["10.0.0.1"]
-      destination_addresses = ["192.168.1.1", "192.168.1.2"]
+      source_addresses      = ["*"]
+      destination_addresses = ["10.2."]
       destination_ports     = ["80", "1000-2000"]
+    }
+  }
+
+  network_rule_collection {
+    name = "Allow-production_spoke"
+    priority = 300
+    action = "Allow"
+
+    rule {
+      name = "Allow-production_spoke_rule1"
+      protocols = ["TCP"]
+      source_addresses = ["10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16", "10.4.0.0/16"]
+      destination_addresses = ["*"]
+      destination_ports = ["80", "443"]
     }
   }
 
   nat_rule_collection {
     name     = "nat_rule_collection1"
-    priority = 300
+    priority = 200
     action   = "Dnat"
     rule {
       name                = "nat_rule_collection1_rule1"
       protocols           = ["TCP", "UDP"]
-      source_addresses    = ["10.0.0.1", "10.0.0.2"]
-      destination_address = "192.168.1.1"
+      source_addresses    = ["*"]
+      destination_address = var.azure_firewall_pip_id
       destination_ports   = ["80"]
-      translated_address  = "192.168.0.1"
+      translated_address  = "10.1.0.1/24"
       translated_port     = "8080"
     }
   }
