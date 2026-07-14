@@ -21,3 +21,8 @@ variable "vm_size" {
     description = "The allowed VM size for the landing zone."
     type        = string
 }
+
+variable "azure_firewall_pip_id" {
+    description = "The ID of the Azure Firewall Public IP."
+    type        = string
+}
