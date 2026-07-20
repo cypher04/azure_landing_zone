@@ -9,6 +9,7 @@ terraform {
 
 
 provider "azurerm" {
+    alias = "Security"
   features {}
   subscription_id = var.security_subscription_id
 }
