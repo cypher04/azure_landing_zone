@@ -26,3 +26,18 @@ variable "azure_firewall_pip_id" {
     description = "The ID of the Azure Firewall Public IP."
     type        = string
 }
+
+variable "azure_firewall_public_ip_address" {
+    description = "The Public IP of the Azure Firewall."
+    type        = string
+}
+
+variable "landing_zone_rg" {
+    description = "The resource group ID for the landing zone."
+    type        = string
+}
+
+variable "management_group_ids" {
+    description = "The management group ID for the landing zone."
+    type        = map(string)
+}
