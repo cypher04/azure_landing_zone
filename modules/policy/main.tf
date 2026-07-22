@@ -13,40 +13,60 @@ resource "azurerm_policy_definition" "location_restriction_policy" {
   description  = "This policy restricts the allowed locations for resources."
 
   policy_rule = <<POLICY_RULE
-{
+ {
     "if": {
-        "not": {
-            "field": "location",
-            "in": "[parameters('allowedLocations')]"
-        }
+      "not": {
+        "field": "location",
+        "equals": ${jsonencode(var.location)}
+      }
     },
     "then": {
-        "effect": "deny"
-  
+      "effect": "Deny"
     }
-}
+  }
 POLICY_RULE
-
-
-parameters = <<PARAMETERS
-{
-
-    "allowedLocations": {
-        "type": "Array",
-        "metadata": {
-        "displayName": "Allowed Locations",
-        "description": "The list of allowed locations for resources."
-        }
-    }
-  
-}
-PARAMETERS
 
 }
 
 // vm size restriction policy
+# resource "azurerm_policy_definition" "vm_size_restriction_policy" {
+#   name         = "vm-size-restriction-policy"
+#   policy_type  = "Custom"
+#   mode         = "All"
+#   display_name = "VM Size Restriction Policy"
+#   description  = "This policy restricts the allowed VM sizes."
+
+#   policy_rule = <<POLICY_RULE
+# {
+#     "if": {
+#         "not": {
+#             "field": "Microsoft.Compute/virtualMachines/sku.name",
+#             "in": "[parameters('allowedVMSizes')]"
+#         }
+#     },
+#     "then": {
+#         "effect": "deny"
+#     }
+# }
+# POLICY_RULE
+
+#   parameters = <<PARAMETERS
+# {
+#     "allowedVMSizes": {
+#         "type": "Array",
+#         "metadata": {
+#             "displayName": "Allowed VM Sizes",
+#             "description": "The list of allowed VM sizes."
+#         }
+#     }
+# }
+# PARAMETERS
+
+# }
+
 resource "azurerm_policy_definition" "vm_size_restriction_policy" {
   name         = "vm-size-restriction-policy"
+  management_group_id = var.management_group_ids["landing_zone"]
   policy_type  = "Custom"
   mode         = "All"
   display_name = "VM Size Restriction Policy"
@@ -56,7 +76,7 @@ resource "azurerm_policy_definition" "vm_size_restriction_policy" {
 {
     "if": {
         "not": {
-            "field": "type",
+            "field": "Microsoft.Compute/virtualMachines/sku.name",
             "in": "[parameters('allowedVMSizes')]"
         }
     },
@@ -64,9 +84,9 @@ resource "azurerm_policy_definition" "vm_size_restriction_policy" {
         "effect": "deny"
     }
 }
-POLICY_RULE
+POLICY_RULE 
 
-  parameters = <<PARAMETERS
+parameters = <<PARAMETERS
 {
     "allowedVMSizes": {
         "type": "Array",
@@ -77,8 +97,8 @@ POLICY_RULE
     }
 }
 PARAMETERS
-
 }
+
 
 // network security group policy
 resource "azurerm_policy_definition" "nsg_restriction_policy" {
@@ -122,30 +142,24 @@ resource "azurerm_subscription_policy_assignment" "location_restriction_assignme
   name                 = "location-restriction-assignment"
   subscription_id      = "/subscriptions/${var.security_subscription_id}"
   policy_definition_id = azurerm_policy_definition.location_restriction_policy.id
-
-  parameters = <<PARAMETERS
-{
-    "allowedLocations": {
-        "value": "[var.location]"
-    }
-}
-PARAMETERS
 }
 
 // assign the VM size restriction policy to landing Subscription
-resource "azurerm_subscription_policy_assignment" "vm_size_restriction_assignment" {
-  name                 = "vm-size-restriction-assignment"
-  subscription_id      = "/subscriptions/${var.landing_zone_1_subscription_id}"
+resource "azurerm_management_group_policy_assignment" "vm_size_restriction_assignment" {
+  name                 = "vm-size-restriction"
+  management_group_id  = var.management_group_ids["landing_zone"]
   policy_definition_id = azurerm_policy_definition.vm_size_restriction_policy.id
+
 
   parameters = <<PARAMETERS
 {
     "allowedVMSizes": {
-        "value": "[var.vm_size]"
+        "value": ${jsonencode(var.vm_size)}
     }
 }
 PARAMETERS
 }
+  
 
 
 // assign the NSG restriction policy to landing Subscription
@@ -191,7 +205,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "firewall_policy_rule_c
       name                  = "network_rule_collection1_rule1"
       protocols             = ["TCP", "UDP"]
       source_addresses      = ["*"]
-      destination_addresses = ["10.2."]
+      destination_addresses = ["10.2.0.0/16"]
       destination_ports     = ["80", "1000-2000"]
     }
   }
@@ -218,9 +232,9 @@ resource "azurerm_firewall_policy_rule_collection_group" "firewall_policy_rule_c
       name                = "nat_rule_collection1_rule1"
       protocols           = ["TCP", "UDP"]
       source_addresses    = ["*"]
-      destination_address = var.azure_firewall_pip_id
+      destination_address = var.azure_firewall_public_ip_address
       destination_ports   = ["80"]
-      translated_address  = "10.1.0.1/24"
+      translated_address  = "10.1.0.1"
       translated_port     = "8080"
     }
   }
