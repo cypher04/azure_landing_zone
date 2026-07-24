@@ -47,3 +47,18 @@ variable "firewall_private_ip" {
     description = "The private IP address of the Azure Firewall"
     type        = string
 }
+
+variable "azure_firewall_pip_id" {
+    description = "The ID of the public IP address for the Azure Firewall"
+    type        = string
+}
+
+variable "firewall_policy_id" {
+    description = "The ID of the Azure Firewall Policy"
+    type        = string
+}
+
+variable "subnet_ids" {
+    description = "A map of subnet names to their respective IDs"
+    type        = map(string)
+}

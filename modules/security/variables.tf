@@ -28,3 +28,7 @@ variable "firewall_policy_id" {
     type        = string
 }
 
+variable "hub_vnet_name" {
+    description = "The name of the hub virtual network"
+    type        = string
+}
