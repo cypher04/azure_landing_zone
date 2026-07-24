@@ -2,7 +2,6 @@
 resource "azurerm_resource_group" "connectivity_rg" {
     name     = var.connectivity_resource_group_name
     location = var.location
-  
 }
 
 
@@ -156,7 +155,7 @@ resource "azurerm_route" "production_spoke_route" {
     name                   = "production-spoke-route"
     resource_group_name    = azurerm_resource_group.connectivity_rg.name
     route_table_name       = azurerm_route_table.production_spoke_route_table.name
-    address_prefix         = "0.0.0/0"
+    address_prefix         = "0.0.0.0/0"
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = var.firewall_private_ip
       depends_on = [ var.firewall_private_ip ]
@@ -178,7 +177,7 @@ resource "azurerm_route" "non_production_spoke_route" {
     name                   = "non-production-spoke-route"
     resource_group_name    = azurerm_resource_group.connectivity_rg.name
     route_table_name       = azurerm_route_table.non_production_spoke_route_table.name
-    address_prefix         = "0.0.0/0"
+    address_prefix         = "0.0.0.0/0"
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = var.firewall_private_ip
       depends_on = [ var.firewall_private_ip ]
@@ -199,7 +198,7 @@ resource "azurerm_route" "data_platform_spoke_route" {
     name                   = "data-platform-spoke-route"
     resource_group_name    = azurerm_resource_group.connectivity_rg.name
     route_table_name       = azurerm_route_table.data_platform_spoke_route_table.name
-    address_prefix         = "0.0.0/0"
+    address_prefix         = "0.0.0.0/0"
     next_hop_type          = "VirtualAppliance"
     next_hop_in_ip_address = var.firewall_private_ip
 
@@ -210,3 +209,28 @@ resource "azurerm_subnet_route_table_association" "data_platform_spoke_route_tab
     subnet_id      = azurerm_subnet.data_platform_spoke_subnet.id
     route_table_id = azurerm_route_table.data_platform_spoke_route_table.id
 }
+
+// AZURE FIREWALL
+
+resource "azurerm_firewall" "azure_firewall" {
+    name                = "azure-firewall"
+    location            = var.location
+    resource_group_name = var.connectivity_resource_group_name
+    sku_name           = "AZFW_VNet"
+    sku_tier           = "Standard"
+    firewall_policy_id  = var.firewall_policy_id
+
+    ip_configuration {
+        name                 = "configuration"
+        subnet_id            = var.subnet_ids["Azure_firewall_id"]
+        public_ip_address_id = var.azure_firewall_pip_id
+    }
+
+    depends_on = [time_sleep.wait_60_seconds]
+}
+
+resource "time_sleep" "wait_60_seconds" {
+  depends_on = [var.hub_vnet_name]
+  create_duration = "60s"
+}
+
