@@ -113,3 +113,34 @@ variable "vm_size" {
     description = "Size of the virtual machines"
     type        = string
 }
+
+
+variable "keyvault_secret_names" {
+    description = "Map of keyvault secret names"
+    type        = map(string)
+}
+
+variable "keyvault_secret_value"{
+        description = "Value of the keyvault secret"
+        type        = string
+    }
+
+variable "keyvault_certificate_names" {
+    description = "Map of keyvault certificate names"
+    type        = map(string)
+}
+
+variable "keyvault_certificate_contents" {
+    description = "Contents of the keyvault certificates"
+    type        = string
+}
+
+variable "keyvault_certificate_password" {
+    description = "Password for the keyvault certificates"
+    type        = string
+}
+variable "keyvault_key_names" {
+    description = "Map of keyvault key names"
+    type        = map(string)
+}
+    

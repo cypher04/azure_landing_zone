@@ -4,6 +4,16 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "4.80.0"
     }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "3.9.0"
+    }
+
+    time = {
+      source  = "hashicorp/time"
+      version = "0.14.0"
+    }
   }
 }
 
@@ -23,3 +33,10 @@ provider "azurerm" {
     subscription_id = var.security_subscription_id
 }
 
+provider "random" {
+
+}
+
+provider "time" {
+
+}
