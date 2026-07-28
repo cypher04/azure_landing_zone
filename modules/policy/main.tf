@@ -73,30 +73,22 @@ resource "azurerm_policy_definition" "vm_size_restriction_policy" {
   description  = "This policy restricts the allowed VM sizes."
 
   policy_rule = <<POLICY_RULE
+
 {
     "if": {
-        "not": {
-            "field": "Microsoft.Compute/virtualMachines/sku.name",
-            "in": "[parameters('allowedVMSizes')]"
-        }
+      "not": {
+        "field": "Microsoft.Compute/virtualMachines/sku.name",
+        "in": ${jsonencode([var.vm_size])}
+      }
     },
     "then": {
-        "effect": "deny"
+      "effect": "Deny"
     }
-}
-POLICY_RULE 
+  }
 
-parameters = <<PARAMETERS
-{
-    "allowedVMSizes": {
-        "type": "Array",
-        "metadata": {
-            "displayName": "Allowed VM Sizes",
-            "description": "The list of allowed VM sizes."
-        }
-    }
-}
-PARAMETERS
+POLICY_RULE
+
+
 }
 
 
@@ -145,19 +137,10 @@ resource "azurerm_subscription_policy_assignment" "location_restriction_assignme
 }
 
 // assign the VM size restriction policy to landing Subscription
-resource "azurerm_management_group_policy_assignment" "vm_size_restriction_assignment" {
+resource "azurerm_resource_group_policy_assignment" "vm_size_restriction_assignment" {
   name                 = "vm-size-restriction"
-  management_group_id  = var.management_group_ids["landing_zone"]
+  resource_group_id  = var.landing_zone_rg_id
   policy_definition_id = azurerm_policy_definition.vm_size_restriction_policy.id
-
-
-  parameters = <<PARAMETERS
-{
-    "allowedVMSizes": {
-        "value": ${jsonencode(var.vm_size)}
-    }
-}
-PARAMETERS
 }
   
 

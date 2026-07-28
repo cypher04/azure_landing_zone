@@ -41,3 +41,8 @@ variable "management_group_ids" {
     description = "The management group ID for the landing zone."
     type        = map(string)
 }
+
+variable "landing_zone_rg_id" {
+    description = "The resource group ID for the landing zone."
+    type        = string
+}
