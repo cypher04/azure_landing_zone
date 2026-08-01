@@ -24,6 +24,26 @@ output "hub_vnet_name" {
     value = azurerm_virtual_network.hub_vnet.name
 }
 
+output "hub_vnet_id" {
+    value = azurerm_virtual_network.hub_vnet.id
+}
+
 output "firewall_private_ip" {
     value = azurerm_firewall.azure_firewall.ip_configuration[0].private_ip_address
+}
+
+output "firewall_id" {
+    value = azurerm_firewall.azure_firewall.id
+}
+
+output "production_spoke_vnet_id" {
+    value = azurerm_virtual_network.production_spoke_vnet.id
+}
+
+output "non_production_spoke_vnet_id" {
+    value = azurerm_virtual_network.non_production_spoke_vnet.id
+}
+
+output "data_platform_spoke_vnet_id" {
+    value = azurerm_virtual_network.data_platform_spoke_vnet.id
 }
