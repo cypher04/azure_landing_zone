@@ -143,6 +143,14 @@ resource "azurerm_public_ip" "azure_firewall_public_ip" {
   
 }
 
+// public IP for Bastion host
+resource "azurerm_public_ip" "bastion_public_ip" {
+    name                = "bastion-public-ip"
+    location            = var.location
+    resource_group_name = azurerm_resource_group.connectivity_rg.name
+    allocation_method   = "Static"
+}
+
 
 ////////// route spoke traffic to Azure Firewall
 resource "azurerm_route_table" "production_spoke_route_table" {
@@ -233,4 +241,77 @@ resource "time_sleep" "wait_60_seconds" {
   depends_on = [var.hub_vnet_name]
   create_duration = "60s"
 }
+
+resource "random_string" "random_string" {
+  length  = 4
+  special = false
+}
+
+
+
+
+
+
+///////////////////// private dns
+
+// For database private link
+resource "azurerm_private_dns_zone" "private_dns_zone_database" {
+    name                = "privatelink.database.windows.net"
+    resource_group_name = var.connectivity_resource_group_name
+}
+
+
+// for blob storage private link
+resource "azurerm_private_dns_zone" "private_dns_zone_blob" {
+    name                = "privatelink.blob.core.windows.net"
+    resource_group_name = var.connectivity_resource_group_name
+}
+
+// for vault private link
+resource "azurerm_private_dns_zone" "private_dns_zone_vault" {
+    name                = "privatelink.vaultcore.azure.net"
+    resource_group_name = var.connectivity_resource_group_name
+}
+
+
+// associate the private dns zone with the hub vnet
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link" {
+    name                  = "private-dns-zone-link"
+    resource_group_name   = var.connectivity_resource_group_name
+    private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_database.name
+    virtual_network_id    = azurerm_virtual_network.hub_vnet.id
+    registration_enabled  = false
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_blob" {
+    name                  = "private-dns-zone-link-blob"
+    resource_group_name   = var.connectivity_resource_group_name
+    private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_blob.name
+    virtual_network_id    = azurerm_virtual_network.hub_vnet.id
+    registration_enabled  = false
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_vault" {
+    name                  = "private-dns-zone-link-vault"
+    resource_group_name   = var.connectivity_resource_group_name
+    private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_vault.name
+    virtual_network_id    = azurerm_virtual_network.hub_vnet.id
+    registration_enabled  = false
+}
+
+
+/////////// Deploy bastion host
+resource "azurerm_bastion_host" "bastion_host" {
+    name                = "bastion-host${random_string.random_string.result}"
+    location            = var.location
+    resource_group_name = azurerm_resource_group.connectivity_rg.name
+
+    ip_configuration {
+        name                 = "configuration"
+        subnet_id            = azurerm_subnet.AzureBastionSubnet.id
+        public_ip_address_id = azurerm_public_ip.bastion_public_ip.id
+    }
+}
+
+
 
