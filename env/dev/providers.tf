@@ -5,6 +5,11 @@ terraform {
       version = "4.80.0"
     }
 
+     azuread = {
+      source  = "hashicorp/azuread"
+      version = "3.9.0"
+    }
+
     random = {
       source  = "hashicorp/random"
       version = "3.9.0"
@@ -20,6 +25,14 @@ terraform {
 provider "azurerm" {
     features {}
 }
+
+provider "azurerm" {
+    alias = "Identity"
+    features {}
+    subscription_id = var.identity_subscription_id
+}
+
+
 
 provider "azurerm" {
     alias = "Connectivity"

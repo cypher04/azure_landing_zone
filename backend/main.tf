@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "state_rg" {
     provider = azurerm
-  name     = "${var.project_name}${var.environment}-rg"
+  name     = "${var.project_name}${var.environment}-rg2"
   location = var.location
 }
 
@@ -8,9 +8,14 @@ data "azurerm_client_config" "current" {
 
 }
 
+# import {
+#   id = "/subscriptions/fe797b99-c79d-4fe3-baa0-091bacc96c3a/resourceGroups/landingzonedev-rg2"
+#   to = azurerm_resource_group.state_rg
+# }
+
 resource "azurerm_storage_account" "state_storage" {
     provider = azurerm
-  name                     = "${var.project_name}state${var.environment}"
+  name                     = "${var.project_name}state${var.environment}2"
   resource_group_name      = azurerm_resource_group.state_rg.name
   location                 = var.location
   account_tier             = "Standard"
@@ -29,12 +34,13 @@ resource "azurerm_storage_account" "state_storage" {
       delete_retention_policy {
         days = 30
       }
+
     }
 }
 
 resource "azurerm_storage_container" "state_container" {
     provider = azurerm
-    name                  = "tfstate"
+    name                  = "tfstate2"
     storage_account_name  = azurerm_storage_account.state_storage.name
     container_access_type = "private"
     }
