@@ -63,15 +63,15 @@ data "azurerm_client_config" "current" {
 #   to = module.management.azurerm_management_group_subscription_association.connectivity_subscription
 # }
 
-# import {
-#   id = "/subscriptions/<connectivity_subscription_id>/resourceGroups/landingzone-dev-connectivity-rg"
-#   to = azurerm_resource_group.connectivity_rg
-# }
+import {
+  id = "/subscriptions/<connectivity_subscription_id>/resourceGroups/landingzone-dev-connectivity-rg"
+  to = azurerm_resource_group.connectivity_rg
+}
 
-# import {
-#   id = "/subscriptions/<security_subscription_id>/resourceGroups/landingzone-dev-security-rg"
-#   to = module.policy.azurerm_resource_group.security_rg
-# }
+import {
+  id = "/subscriptions/<security_subscription_id>/resourceGroups/landingzone-dev-security-rg"
+  to = azurerm_resource_group.security_rg
+}
 
 // landing zone resource group import
 # import {
@@ -89,6 +89,12 @@ data "azurerm_client_config" "current" {
 # import {
 #     id = "/subscriptions/<security_subscription_id>/providers/Microsoft.Authorization/policyDefinitions/nsg-restriction-policy"
 #     to = module.policy.azurerm_policy_definition.nsg_restriction_policy
+# }
+
+
+# import {
+#     id = "/subscriptions/50f6b2b9-e4c4-4492-bd70-1f8b4db206ac/providers/Microsoft.Authorization/policyAssignments/location-restriction-assignment"
+#     to = module.policy.azurerm_subscription_policy_assignment.location_restriction_assignment
 # }
 
 
@@ -135,20 +141,20 @@ module "networking" {
 
 }
 
-module "security" {
-    source = "../../modules/security"
-    providers = {
-        azurerm = azurerm.Security
-    }
-    location = var.location
-    subnet_ids = module.networking.subnet_ids
-    security_subscription_id = var.security_subscription_id
-    security_resource_group_name = var.security_resource_group_name
-    azure_firewall_pip_id = module.networking.azure_firewall_pip_id
-    firewall_policy_id = module.policy.firewall_policy_id
-    hub_vnet_name = module.networking.hub_vnet_name
+# module "security" {
+#     source = "../../modules/security"
+#     providers = {
+#         azurerm = azurerm.Security
+#     }
+#     # location = var.location
+#     subnet_ids = module.networking.subnet_ids
+#     security_subscription_id = var.security_subscription_id
+#     security_resource_group_name = var.security_resource_group_name
+#     azure_firewall_pip_id = module.networking.azure_firewall_pip_id
+#     firewall_policy_id = module.policy.firewall_policy_id
+#     hub_vnet_name = module.networking.hub_vnet_name
 
-}
+# }
 
 
 module "policy" {
@@ -184,4 +190,49 @@ module "keyvault" {
     keyvault_certificate_contents = var.keyvault_certificate_contents
     keyvault_certificate_password = var.keyvault_certificate_password
     keyvault_key_names = var.keyvault_key_names
+}
+
+module "monitoring" {
+    source = "../../modules/monitoring"
+    providers = {
+        azurerm = azurerm.Security
+    }
+    location = var.location
+    security_subscription_id = var.security_subscription_id
+    security_resource_group_name = var.security_resource_group_name
+    Diagnostics_storage_account_id   = module.storage.Diagnostics_storage_account_id
+    logs_storage_account_id         = module.storage.logs_storage_account_id
+    keyvault_id                     = module.keyvault.keyvault_id
+    firewall_id                    = module.networking.firewall_id
+    hub_vnet_id                      = module.networking.hub_vnet_id
+    production_spoke_vnet_id                = module.networking.production_spoke_vnet_id
+    non_production_spoke_vnet_id                = module.networking.non_production_spoke_vnet_id
+    data_platform_spoke_vnet_id                = module.networking.data_platform_spoke_vnet_id
+}   
+
+
+module "storage" {
+    source = "../../modules/storage"
+    providers = {
+        azurerm = azurerm.Security
+    }
+    location = var.location
+    security_subscription_id = var.security_subscription_id
+    security_resource_group_name = var.security_resource_group_name
+}
+
+
+module "idenity" {
+    source = "../../modules/identity"
+    providers = {
+        azurerm = azurerm.Identity
+    }
+    location = var.location
+    security_subscription_id = var.security_subscription_id
+    security_resource_group_name = var.security_resource_group_name
+    management_subscription_id = var.management_subscription_id
+    identity_subscription_id = var.identity_subscription_id
+    landing_zone_subscription_id = var.landing_zone_1_subscription_id
+    connectivity_subscription_id = var.connectivity_subscription_id
+
 }
