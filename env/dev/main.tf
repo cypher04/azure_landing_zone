@@ -141,20 +141,21 @@ module "networking" {
 
 }
 
-# module "security" {
-#     source = "../../modules/security"
-#     providers = {
-#         azurerm = azurerm.Security
-#     }
-#     # location = var.location
-#     subnet_ids = module.networking.subnet_ids
-#     security_subscription_id = var.security_subscription_id
-#     security_resource_group_name = var.security_resource_group_name
-#     azure_firewall_pip_id = module.networking.azure_firewall_pip_id
-#     firewall_policy_id = module.policy.firewall_policy_id
-#     hub_vnet_name = module.networking.hub_vnet_name
+module "security" {
+    source = "../../modules/security"
+    providers = {
+        azurerm = azurerm.Security
+    }
+    # location = var.location
+    subnet_ids = module.networking.subnet_ids
+    security_subscription_id = var.security_subscription_id
+    security_resource_group_name = var.security_resource_group_name
+    location = var.location
+    keyvault_id = module.keyvault.keyvault_id
+    Diagnostics_storage_account_id = module.storage.Diagnostics_storage_account_id
+    logs_storage_account_id = module.storage.logs_storage_account_id
 
-# }
+}
 
 
 module "policy" {
