@@ -47,3 +47,15 @@ output "non_production_spoke_vnet_id" {
 output "data_platform_spoke_vnet_id" {
     value = azurerm_virtual_network.data_platform_spoke_vnet.id
 }
+
+output "diagnostics_private_dns_zone_blob_id" {
+    value = azurerm_private_dns_zone.diagnostics_private_dns_zone_blob.id
+}
+
+output "logs_private_dns_zone_blob_id" {
+    value = azurerm_private_dns_zone.logs_private_dns_zone_blob.id
+}
+
+output "private_dns_zone_vault_id" {
+    value = azurerm_private_dns_zone.private_dns_zone_vault.id
+}

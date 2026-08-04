@@ -261,8 +261,16 @@ resource "azurerm_private_dns_zone" "private_dns_zone_database" {
 }
 
 
-// for blob storage private link
-resource "azurerm_private_dns_zone" "private_dns_zone_blob" {
+// for diagnostics blob storage private link
+resource "azurerm_private_dns_zone" "diagnostics_private_dns_zone_blob" {
+    name                = "privatelink.blob.core.windows.net"
+    resource_group_name = var.connectivity_resource_group_name
+    
+}
+
+
+// for logs blob storage private link
+resource "azurerm_private_dns_zone" "logs_private_dns_zone_blob" {
     name                = "privatelink.blob.core.windows.net"
     resource_group_name = var.connectivity_resource_group_name
 }
@@ -286,7 +294,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link"
 resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_link_blob" {
     name                  = "private-dns-zone-link-blob"
     resource_group_name   = var.connectivity_resource_group_name
-    private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_blob.name
+    private_dns_zone_name = azurerm_private_dns_zone.logs_private_dns_zone_blob.name
     virtual_network_id    = azurerm_virtual_network.hub_vnet.id
     registration_enabled  = false
 }
