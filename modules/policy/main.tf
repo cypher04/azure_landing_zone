@@ -28,6 +28,39 @@ POLICY_RULE
 
 }
 
+
+
+// HTTPS Storage policy
+resource "azurerm_policy_definition" "https_storage_policy" {
+  name         = "https-storage-policy"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "HTTPS Storage Policy"
+  description  = "This policy enforces HTTPS for storage accounts."
+
+
+  policy_rule = <<POLICY_RULE
+  {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "field": "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly",
+          "notEquals": "true"
+        }
+      ]
+    },
+    "then": {
+      "effect": "Deny"
+    }
+  }
+  POLICY_RULE
+}
+
+
 // vm size restriction policy
 # resource "azurerm_policy_definition" "vm_size_restriction_policy" {
 #   name         = "vm-size-restriction-policy"
@@ -64,32 +97,32 @@ POLICY_RULE
 
 # }
 
-resource "azurerm_policy_definition" "vm_size_restriction_policy" {
-  name         = "vm-size-restriction-policy"
-  management_group_id = var.management_group_ids["landing_zone"]
-  policy_type  = "Custom"
-  mode         = "All"
-  display_name = "VM Size Restriction Policy"
-  description  = "This policy restricts the allowed VM sizes."
+# resource "azurerm_policy_definition" "vm_size_restriction_policy" {
+#   name         = "vm-size-restriction-policy"
+#   management_group_id = var.management_group_ids["landing_zone"]
+#   policy_type  = "Custom"
+#   mode         = "All"
+#   display_name = "VM Size Restriction Policy"
+#   description  = "This policy restricts the allowed VM sizes."
 
-  policy_rule = <<POLICY_RULE
+#   policy_rule = <<POLICY_RULE
 
-{
-    "if": {
-      "not": {
-        "field": "Microsoft.Compute/virtualMachines/sku.name",
-        "in": ${jsonencode([var.vm_size])}
-      }
-    },
-    "then": {
-      "effect": "Deny"
-    }
-  }
+# {
+#     "if": {
+#       "not": {
+#         "field": "Microsoft.Compute/virtualMachines/sku.name",
+#         "in": ${jsonencode([var.vm_size])}
+#       }
+#     },
+#     "then": {
+#       "effect": "Deny"
+#     }
+#   }
 
-POLICY_RULE
+# POLICY_RULE
 
 
-}
+# }
 
 
 // network security group policy
@@ -137,11 +170,11 @@ resource "azurerm_subscription_policy_assignment" "location_restriction_assignme
 }
 
 // assign the VM size restriction policy to landing Subscription
-resource "azurerm_resource_group_policy_assignment" "vm_size_restriction_assignment" {
-  name                 = "vm-size-restriction"
-  resource_group_id  = var.landing_zone_rg_id
-  policy_definition_id = azurerm_policy_definition.vm_size_restriction_policy.id
-}
+# resource "azurerm_resource_group_policy_assignment" "vm_size_restriction_assignment" {
+#   name                 = "vm-size-restriction"
+#   resource_group_id  = var.landing_zone_rg_id
+#   policy_definition_id = azurerm_policy_definition.vm_size_restriction_policy.id
+# }
   
 
 
@@ -222,4 +255,27 @@ resource "azurerm_firewall_policy_rule_collection_group" "firewall_policy_rule_c
     }
   }
 }
-  
+
+//////// policy definitions for allowed locations, mandatory tags, and allowed VM sizes
+
+// policy initiatives to for allowed locations, mandatory tags, and allowed VM sizes
+resource "azurerm_policy_set_definition" "policy_initiative" {
+  name         = "policy-initiative"
+  policy_type  = "Custom"
+  display_name = "Policy Initiative"
+  description  = "This initiative includes policies for allowed locations, mandatory tags, and allowed VM sizes."
+
+  policy_definition_reference {
+    policy_definition_id = azurerm_policy_definition.location_restriction_policy.id
+  }
+ policy_definition_reference {
+    policy_definition_id = azurerm_policy_definition.https_storage_policy.id
+  }
+}
+
+// assign the policy initiative to landing_zone mgt group
+resource "azurerm_management_group_policy_assignment" "policy_initiative_assignment" {
+  name                 = "policy-init"
+  management_group_id  = var.management_group_ids["landing_zone"]
+  policy_definition_id = azurerm_policy_set_definition.policy_initiative.id
+}
