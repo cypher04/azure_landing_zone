@@ -1,5 +1,5 @@
 
-variable "security_resource_group_name" {
+variable "connectivity_resource_group_name" {
     description = "The name of the resource group for security resources"
     type        = string
 }
@@ -34,3 +34,17 @@ variable "logs_storage_account_id" {
     type        = string
 }
 
+variable "diagnostics_private_dns_zone_blob_id" {
+    description = "The ID of the Diagnostics Storage Account"
+    type        = string
+}
+
+variable "logs_private_dns_zone_blob_id" {
+    description = "The ID of the Logs Storage Account"
+    type        = string
+}
+
+variable "private_dns_zone_vault_id" {
+    description = "The ID of the Private DNS Zone for Key Vault"
+    type        = string
+}
