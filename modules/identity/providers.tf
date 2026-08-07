@@ -20,5 +20,5 @@ provider "azurerm" {
 
 provider "azuread" {
 
-    tenant_id = data.azurerm_subscription.connectivity_subscription.tenant_id
+    tenant_id = var.tenant_id
 }
