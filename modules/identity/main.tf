@@ -1,3 +1,13 @@
+// identity resource group
+
+resource "azurerm_resource_group" "identity_resource_group" {
+    provider = azurerm.identity
+    name     = "identity-rg"
+    location = var.location
+}
+
+
+
 // Azure AD group for Cloud Engineers
 
 resource "azuread_group" "CloudEngineersGroup" {
@@ -71,7 +81,7 @@ resource "azurerm_role_assignment" "DevelopersTeamRoleAssignment" {
 resource "azurerm_user_assigned_identity" "automation_identity" {
     provider            = azurerm.identity
     name                = "automation-identity"
-    resource_group_name = var.security_resource_group_name
+    resource_group_name = azurerm_resource_group.identity_resource_group.name
     location            = var.location
 }
 
@@ -81,7 +91,7 @@ resource "azurerm_user_assigned_identity" "automation_identity" {
 resource "azurerm_user_assigned_identity" "application_identity" {
     provider            = azurerm.identity
     name                = "application-identity"
-    resource_group_name = var.security_resource_group_name
+    resource_group_name = azurerm_resource_group.identity_resource_group.name
     location            = var.location
 }
 
@@ -89,7 +99,7 @@ resource "azurerm_user_assigned_identity" "application_identity" {
 resource "azurerm_user_assigned_identity" "monitoring_identity" {
     provider            = azurerm.identity
     name                = "monitoring-identity"
-    resource_group_name = var.security_resource_group_name
+    resource_group_name = azurerm_resource_group.identity_resource_group.name
     location            = var.location
 }
 

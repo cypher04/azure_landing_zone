@@ -33,3 +33,8 @@ variable "location" {
     type        = string
 }
 
+variable "tenant_id" {
+    description = "The tenant ID for the Azure AD provider."
+    type        = string
+}
+

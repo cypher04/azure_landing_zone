@@ -1,7 +1,14 @@
 resource "azurerm_resource_group" "security_rg" {
-  name     = var.security_resource_group_name
+  name     = "security-rg${random_string.random.result}"
   location = var.location
 }
+
+
+resource "random_string" "random" {
+  length  = 4
+  special = false
+}
+
 
 
 // location restriction policy
