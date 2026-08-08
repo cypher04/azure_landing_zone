@@ -1,12 +1,15 @@
 resource "azurerm_resource_group" "landing_zone_rg" {
-    
-    name     = var.resource_group_name
+    provider = azurerm.Management
+    name     = "landing-zone${random_string.random.result}-rg"
   location = var.location
   
 }
 
-// management group for the platform, Corp and Sandbox
-
+resource "random_string" "random" {
+  length  = 4
+  upper   = false
+  special = false
+}
 
 
 // management group for the platform
@@ -14,9 +17,9 @@ resource "azurerm_management_group" "platform" {
     # provider        = azurerm
     name            = "platform"
     display_name    = "Platform"
-    subscription_ids = [
-        var.management_subscription_id
-        ]
+    # subscription_ids = [
+    #     var.management_subscription_id
+    #     ]
 }
 
 //mamagement group for the Landing Zone
@@ -24,9 +27,9 @@ resource "azurerm_management_group" "landing_zone" {
     # provider        = azurerm
     name            = "landing_zone"
     display_name    = "Landing Zone"
-    subscription_ids = [
-        var.landing_zone_1_subscription_id
-        ]
+    # subscription_ids = [
+    #     var.connectivity_subscription_id,
+    #     ]
 
 }
 
@@ -35,9 +38,9 @@ resource "azurerm_management_group" "sandbox" {
     # provider        = azurerm
     name            = "sandbox"
     display_name    = "Sandbox"
-   subscription_ids = [
-        var.landing_zone_1_subscription_id
-        ]
+#    subscription_ids = [
+#         var.landing_zone_1_subscription_id
+#         ]
 }
 
 ///////////////////////////
@@ -94,7 +97,7 @@ resource "azurerm_management_group" "corp" {
     parent_management_group_id = azurerm_management_group.landing_zone.id
 
     subscription_ids = [
-        var.landing_zone_1_subscription_id
+        var.connectivity_subscription_id
         ]
 }
 
@@ -103,9 +106,9 @@ resource "azurerm_management_group" "online" {
     name            = "online"
     display_name    = "Online"
     parent_management_group_id = azurerm_management_group.landing_zone.id
-    subscription_ids = [
-        var.landing_zone_1_subscription_id
-        ]
+    # subscription_ids = [
+    #     var.connectivity_subscription_id
+    #     ]
 }
 
 
@@ -116,43 +119,43 @@ resource "azurerm_management_group" "dev" {
     name            = "dev"
     display_name    = "Dev"
     parent_management_group_id = azurerm_management_group.sandbox.id
-    subscription_ids = [
-        var.landing_zone_1_subscription_id
-        ]
+    # subscription_ids = [
+    #     var.landing_zone_1_subscription_id
+    #     ]
 }
 
 
 // Attach subscription to the management groups
 
-resource "azurerm_management_group_subscription_association" "identity_subscription" {
-    management_group_id = azurerm_management_group.identity.id
-    subscription_id     = "/subscriptions/${var.identity_subscription_id}"
-}
+# resource "azurerm_management_group_subscription_association" "identity_subscription" {
+#     management_group_id = azurerm_management_group.identity.id
+#     subscription_id     = "/subscriptions/${var.identity_subscription_id}"
+# }
 
-resource "azurerm_management_group_subscription_association" "security_subscription" {
-    management_group_id = azurerm_management_group.security.id
-    subscription_id     = "/subscriptions/${var.security_subscription_id}"
-}
+# resource "azurerm_management_group_subscription_association" "security_subscription" {
+#     management_group_id = azurerm_management_group.security.id
+#     subscription_id     = "/subscriptions/${var.security_subscription_id}"
+# }
 
-resource "azurerm_management_group_subscription_association" "management_subscription" {
-    management_group_id = azurerm_management_group.management.id
-    subscription_id     = "/subscriptions/${var.management_subscription_id}"
-}
+# resource "azurerm_management_group_subscription_association" "management_subscription" {
+#     management_group_id = azurerm_management_group.management.id
+#     subscription_id     = "/subscriptions/${var.management_subscription_id}"
+# }
 
-# resource "azurerm_management_group_subscription_association" "apps_subscription" {
-#     management_group_id = azurerm_management_group.corp.id
+# # resource "azurerm_management_group_subscription_association" "apps_subscription" {
+# #     management_group_id = azurerm_management_group.corp.id
+# #     subscription_id     = "/subscriptions/${var.landing_zone_1_subscription_id}"
+# # }
+
+# resource "azurerm_management_group_subscription_association" "dev_subscription" {
+#     management_group_id = azurerm_management_group.dev.id
 #     subscription_id     = "/subscriptions/${var.landing_zone_1_subscription_id}"
 # }
 
-resource "azurerm_management_group_subscription_association" "dev_subscription" {
-    management_group_id = azurerm_management_group.dev.id
-    subscription_id     = "/subscriptions/${var.landing_zone_1_subscription_id}"
-}
-
-resource "azurerm_management_group_subscription_association" "connectivity_subscription" {
-    management_group_id = azurerm_management_group.connectivity.id
-    subscription_id     = "/subscriptions/${var.connectivity_subscription_id}"
-}
+# resource "azurerm_management_group_subscription_association" "connectivity_subscription" {
+#     management_group_id = azurerm_management_group.connectivity.id
+#     subscription_id     = "/subscriptions/${var.connectivity_subscription_id}"
+# }
 
 
 
