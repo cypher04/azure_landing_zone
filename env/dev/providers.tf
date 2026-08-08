@@ -23,7 +23,11 @@ terraform {
 }
 
 provider "azurerm" {
-    features {}
+    features {
+      resource_group {
+        prevent_deletion_if_contains_resources = false
+      }
+    }
 }
 
 provider "azurerm" {
@@ -42,8 +46,21 @@ provider "azurerm" {
 
 provider "azurerm" {
     alias = "Security"
-    features {}
+    features {
+
+      resource_group {
+        prevent_deletion_if_contains_resources = false
+      }
+      
+    }
     subscription_id = var.security_subscription_id
+}
+
+
+provider "azurerm" {
+  alias = "identity"
+  features {}
+  subscription_id = var.identity_subscription_id
 }
 
 provider "random" {
@@ -52,4 +69,9 @@ provider "random" {
 
 provider "time" {
 
+}
+
+provider "azuread" {
+
+    tenant_id = var.tenant_id
 }

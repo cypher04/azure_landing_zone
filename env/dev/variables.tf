@@ -34,11 +34,6 @@ variable "subnet_prefixes" {
     type        = map(string)
 }
 
-variable "resource_group_name" {
-    description = "Name of the resource group"
-    type        = string
-}
-
 variable "address_space" {
     description = "Map of address spaces for different virtual networks"
     type        = map(string)
@@ -84,10 +79,10 @@ variable "landing_zone_1_subscription_id" {
     type        = string
 }
 
-variable "connectivity_resource_group_name" {
-    description = "Name of the connectivity resource group"
-    type        = string
-}
+# variable "connectivity_resource_group_name" {
+#     description = "Name of the connectivity resource group"
+#     type        = string
+# }
 
 variable "production_spoke_vnet_name" {
     description = "Name of the production spoke virtual network"
@@ -104,10 +99,10 @@ variable "data_platform_spoke_vnet_name" {
     type        = string
 }
 
-variable "security_resource_group_name" {
-    description = "Name of the security resource group"
-    type        = string
-}
+# variable "security_resource_group_name" {
+#     description = "Name of the security resource group"
+#     type        = string
+# }
 
 variable "vm_size" {
     description = "Size of the virtual machines"
@@ -144,5 +139,14 @@ variable "keyvault_key_names" {
     type        = map(string)
 }
 
+# variable "security_resource_group" {
+#     description = "security resource group"
+#     type        = string
+# }
+
+variable "tenant_id" {
+    description = "Azure Tenant ID"
+    type        = string
+}
 
     
