@@ -20,15 +20,7 @@ resource "azurerm_monitor_diagnostic_setting" "DiagnosticSettingStorageAccount" 
   log_analytics_workspace_id = azurerm_log_analytics_workspace.LogAnalyticsWorkspace.id
 
   enabled_log {
-    category = "StorageRead"
-  }
-
-  enabled_log {
-    category = "StorageWrite"
-  }
-
-  enabled_log {
-    category = "StorageDelete"
+    category = "AuditEvent"
   }
 
     enabled_metric {
@@ -43,16 +35,8 @@ resource "azurerm_monitor_diagnostic_setting" "DiagnosticSettingLogsStorageAccou
   target_resource_id         = var.logs_storage_account_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.LogAnalyticsWorkspace.id
 
-  enabled_log {
+ enabled_log {
     category = "StorageRead"
-  }
-
-  enabled_log {
-    category = "StorageWrite"
-  }
-
-  enabled_log {
-    category = "StorageDelete"
   }
 
     enabled_metric {
@@ -109,9 +93,9 @@ resource "azurerm_monitor_diagnostic_setting" "DiagnosticSettingVnets" {
   target_resource_id         = var.hub_vnet_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.LogAnalyticsWorkspace.id
 
-  enabled_log {
-    category = "NetworkSecurityGroupEvent"
-  }
+  # enabled_log {
+  #   category = "NetworkSecurityGroupEvent"
+  # }
 
   enabled_log {
     category = "NetworkSecurityGroupRuleCounter"
@@ -127,9 +111,9 @@ resource "azurerm_monitor_diagnostic_setting" "DiagnosticSettingVnetsProduction"
   target_resource_id         = var.production_spoke_vnet_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.LogAnalyticsWorkspace.id
 
-  enabled_log {
-    category = "NetworkSecurityGroupEvent"
-  }
+  # enabled_log {
+  #   category = "NetworkSecurityGroupEvent"
+  # }
 
   enabled_log {
     category = "NetworkSecurityGroupRuleCounter"
@@ -145,9 +129,9 @@ resource "azurerm_monitor_diagnostic_setting" "DiagnosticSettingVnetsNonProducti
   target_resource_id         = var.non_production_spoke_vnet_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.LogAnalyticsWorkspace.id
 
-  enabled_log {
-    category = "NetworkSecurityGroupEvent"
-  }
+  # enabled_log {
+  #   category = "NetworkSecurityGroupEvent"
+  # }
 
   enabled_log {
     category = "NetworkSecurityGroupRuleCounter"
@@ -163,9 +147,9 @@ resource "azurerm_monitor_diagnostic_setting" "DiagnosticSettingVnetsDataPlatfor
   target_resource_id         = var.data_platform_spoke_vnet_id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.LogAnalyticsWorkspace.id
 
-  enabled_log {
-    category = "NetworkSecurityGroupEvent"
-  }
+  # enabled_log {
+  #   category = "NetworkSecurityGroupEvent"
+  # }
 
   enabled_log {
     category = "NetworkSecurityGroupRuleCounter"
@@ -193,7 +177,7 @@ resource "azurerm_monitor_action_group" "MonitorActionGroup" {
 resource "azurerm_monitor_metric_alert" "HighCpuUsageAlert" {
   name                = "high-cpu-usage-alert-${random_string.random.result}"
   resource_group_name = var.security_resource_group_name
-  scopes              = [var.production_spoke_vnet_id, var.non_production_spoke_vnet_id, var.data_platform_spoke_vnet_id]
+  scopes              = [var.vm_id]
   description         = "Alert for high CPU usage on virtual machines"
 
 
@@ -205,12 +189,14 @@ resource "azurerm_monitor_metric_alert" "HighCpuUsageAlert" {
         threshold        = 80
     }
 
+
+
     action {
         action_group_id = azurerm_monitor_action_group.MonitorActionGroup.id
 
-        webhook_properties = {
-            from = "terraform"
-        }
+        # webhook_properties = {
+        #     from = "terraform"
+        # }
     }
 
 }
@@ -219,7 +205,7 @@ resource "azurerm_monitor_metric_alert" "HighCpuUsageAlert" {
 resource "azurerm_monitor_activity_log_alert" "FailedLoginAttemptsAlert" {
   name                = "failed-login-attempts-alert-${random_string.random.result}"
   resource_group_name = var.security_resource_group_name
-  scopes              = [var.production_spoke_vnet_id, var.non_production_spoke_vnet_id, var.data_platform_spoke_vnet_id]
+  scopes              = [var.vm_id]
   description         = "Alert for failed login attempts on virtual machines"
   location            = var.location
   
@@ -227,14 +213,15 @@ resource "azurerm_monitor_activity_log_alert" "FailedLoginAttemptsAlert" {
         category = "Administrative"
         operation_name = "Microsoft.Compute/virtualMachines/login/action"
         status = "Failed"
+        resource_id = var.vm_id
     }
 
     action {
         action_group_id = azurerm_monitor_action_group.MonitorActionGroup.id
 
-        webhook_properties = {
-            from = "terraform"
-        }
+        # webhook_properties = {
+        #     from = "terraform"
+        # }
     }
 }
 
@@ -251,6 +238,7 @@ resource "azurerm_monitor_activity_log_alert" "FirewallDeniedConnectionsAlert" {
         category = "Security"
         operation_name = "Microsoft.Network/azureFirewalls/deny/action"
         status = "Failed"
+        resource_id = var.firewall_id
     }
 
     action {
