@@ -53,3 +53,13 @@ variable "data_platform_spoke_vnet_id" {
   description = "The ID of the Data Platform Spoke Virtual Network."
   type        = string
 }
+
+variable "connectivity_subscription_id" {
+  description = "The subscription ID for the connectivity resources."
+  type        = string
+}
+
+variable "vm_id" {
+  description = "The ID of the virtual machine to monitor."
+  type        = string
+}
