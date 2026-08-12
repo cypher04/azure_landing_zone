@@ -149,4 +149,14 @@ variable "tenant_id" {
     type        = string
 }
 
+variable "vm_admin_username" {
+    description = "Admin username for the virtual machines"
+    type        = string
+}
+
+variable "vm_admin_password" {
+    description = "Admin password for the virtual machines"
+    type        = string
+    sensitive   = true
+}
     
