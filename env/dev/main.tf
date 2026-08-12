@@ -213,9 +213,8 @@ module "security" {
     keyvault_id = module.keyvault.keyvault_id
     Diagnostics_storage_account_id = module.storage.Diagnostics_storage_account_id
     logs_storage_account_id = module.storage.logs_storage_account_id
-    diagnostics_private_dns_zone_blob_id = module.networking.diagnostics_private_dns_zone_blob_id
-    logs_private_dns_zone_blob_id = module.networking.logs_private_dns_zone_blob_id
     private_dns_zone_vault_id = module.networking.private_dns_zone_vault_id
+    diagnostics_logs_private_dns_zone_blob_id = module.networking.diagnostics_logs_private_dns_zone_blob_id
 
 }
 
@@ -258,7 +257,7 @@ module "keyvault" {
 module "monitoring" {
     source = "../../modules/monitoring"
     providers = {
-        azurerm = azurerm.Security
+        azurerm = azurerm.Connectivity
     }
     location = var.location
     security_subscription_id = var.security_subscription_id
@@ -271,6 +270,8 @@ module "monitoring" {
     production_spoke_vnet_id                = module.networking.production_spoke_vnet_id
     non_production_spoke_vnet_id                = module.networking.non_production_spoke_vnet_id
     data_platform_spoke_vnet_id                = module.networking.data_platform_spoke_vnet_id
+    connectivity_subscription_id = var.connectivity_subscription_id
+    vm_id = module.compute.vm_id
 }   
 
 
@@ -299,4 +300,20 @@ module "identity" {
     connectivity_subscription_id = var.connectivity_subscription_id
     tenant_id = var.tenant_id
 
+}
+
+
+module "compute" {
+    source = "../../modules/compute"
+    providers = {
+        azurerm = azurerm.Connectivity
+    }
+    location = var.location
+    vm_admin_username = var.vm_admin_username
+    vm_admin_password = var.vm_admin_password
+    subnet_ids = module.networking.subnet_ids
+    connectivity_resource_group_name = module.networking.connectivity_resource_group_name
+    landing_zone_1_subscription_id = var.landing_zone_1_subscription_id
+    vm_size = var.vm_size
+    connectivity_subscription_id = var.connectivity_subscription_id
 }
