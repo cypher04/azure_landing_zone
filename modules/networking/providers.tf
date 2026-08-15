@@ -7,8 +7,3 @@ terraform {
     }
   }
 }
-
-provider "azurerm" {
-    alias = "Connectivity"
-    features {}
-}
