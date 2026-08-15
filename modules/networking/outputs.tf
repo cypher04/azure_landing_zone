@@ -48,14 +48,14 @@ output "data_platform_spoke_vnet_id" {
     value = azurerm_virtual_network.data_platform_spoke_vnet.id
 }
 
-output "diagnostics_private_dns_zone_blob_id" {
-    value = azurerm_private_dns_zone.diagnostics_private_dns_zone_blob.id
-}
-
-output "logs_private_dns_zone_blob_id" {
-    value = azurerm_private_dns_zone.logs_private_dns_zone_blob.id
+output "diagnostics_logs_private_dns_zone_blob_id" {
+    value = azurerm_private_dns_zone.diagnostics_logs_private_dns_zone_blob.id
 }
 
 output "private_dns_zone_vault_id" {
     value = azurerm_private_dns_zone.private_dns_zone_vault.id
+}
+
+output "connectivity_resource_group_name" {
+    value = azurerm_resource_group.connectivity_rg.name
 }
