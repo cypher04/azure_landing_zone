@@ -54,7 +54,7 @@ resource "azurerm_private_endpoint" "logs_storage_account_private_endpoint" {
 
      private_dns_zone_group {
         name = "logs-storage-account-dns-zone-group"
-        private_dns_zone_ids   = [var.logs_private_dns_zone_blob_id]
+        private_dns_zone_ids   = [var.diagnostics_logs_private_dns_zone_blob_id]
     }
 }
 
@@ -73,7 +73,7 @@ resource "azurerm_private_endpoint" "diagnostics_storage_account_private_endpoin
 
     private_dns_zone_group {
         name = "diagnostics-storage-account-dns-zone-group"
-        private_dns_zone_ids   = [var.diagnostics_private_dns_zone_blob_id]
+        private_dns_zone_ids   = [var.diagnostics_logs_private_dns_zone_blob_id]
     }
 }
 
