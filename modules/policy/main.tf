@@ -18,6 +18,7 @@ resource "azurerm_policy_definition" "location_restriction_policy" {
   mode         = "All"
   display_name = "Location Restriction Policy"
   description  = "This policy restricts the allowed locations for resources."
+  management_group_id = var.management_group_ids["landing_zone"]
 
   policy_rule = <<POLICY_RULE
  {
@@ -44,6 +45,7 @@ resource "azurerm_policy_definition" "https_storage_policy" {
   mode         = "All"
   display_name = "HTTPS Storage Policy"
   description  = "This policy enforces HTTPS for storage accounts."
+  management_group_id = var.management_group_ids["landing_zone"]
 
 
   policy_rule = <<POLICY_RULE
@@ -172,7 +174,7 @@ PARAMETERS
 // assign the policies to Security Subscription
 resource "azurerm_subscription_policy_assignment" "location_restriction_assignment" {
   name                 = "location-restriction-assignment"
-  subscription_id      = "/subscriptions/${var.security_subscription_id}"
+  subscription_id      = "/subscriptions/${var.landing_zone_1_subscription_id}"
   policy_definition_id = azurerm_policy_definition.location_restriction_policy.id
 }
 

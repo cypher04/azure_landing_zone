@@ -8,6 +8,12 @@ variable "security_resource_group_name" {
     type        = string
 }
 
+
+variable "connectivity_subscription_id" {
+    description = "The subscription ID for the connectivity resources."
+    type        = string
+}
+
 variable "location" {
     description = "The location for the security resources."
     type        = string
