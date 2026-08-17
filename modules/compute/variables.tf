@@ -3,6 +3,11 @@ variable "landing_zone_1_subscription_id" {
     type        = string
 }
 
+variable "connectivity_subscription_id" {
+    description = "The ID of the connectivity subscription"
+    type        = string
+}
+
 variable "location" {
     description = "The location for the resources"
     type        = string
@@ -25,5 +30,10 @@ variable "vm_admin_username" {
 
 variable "vm_admin_password" {
     description = "The admin password for the virtual machines"
+    type        = string
+}
+
+variable "vm_size" {
+    description = "The size of the virtual machines"
     type        = string
 }

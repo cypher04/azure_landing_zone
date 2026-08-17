@@ -12,7 +12,7 @@ terraform {
 # }
 
 provider "azurerm" {
-    alias = "landingzone1"
+    alias = "connectivity"
     features {}
-    subscription_id = var.landing_zone_1_subscription_id
+    subscription_id = var.connectivity_subscription_id
 }

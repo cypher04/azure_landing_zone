@@ -15,7 +15,7 @@ resource "azurerm_windows_virtual_machine" "vm" {
   name                  = "vm-1"
   resource_group_name   = var.connectivity_resource_group_name
   location              = var.location
-  size                  = "Standard_D4_v5"
+  size                  = var.vm_size
   admin_username        = var.vm_admin_username
   admin_password        = var.vm_admin_password
   network_interface_ids = [azurerm_network_interface.vm_nic.id]
